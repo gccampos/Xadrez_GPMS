@@ -2,14 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class piece : MonoBehaviour
+public abstract class Piece : MonoBehaviour
 {
-  public tile tile;
+  public Tile tile;
      
    void OnMouseDown(){
           Debug.Log("Clicou em "+transform);
+          Debug.Log("time " + transform.parent.name);
    }
    void OnMouseUp(){
           Debug.Log("Deixou de clicar em "+transform);
+   }
+   
+   void Start(){
+          Chessboard.instance.AddPiece(transform.parent.name, this);
    }
 }

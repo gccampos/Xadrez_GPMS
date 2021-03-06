@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class root : piece
+public class Root : Piece
 {
     
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class pawn : piece
+public class Pawn : Piece
 {
     // Start is called before the first frame update
     
