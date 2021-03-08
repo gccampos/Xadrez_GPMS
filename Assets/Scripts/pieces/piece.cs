@@ -14,7 +14,4 @@ public abstract class Piece : MonoBehaviour
           Debug.Log("Deixou de clicar em "+transform);
    }
    
-   void Start(){
-          Chessboard.instance.AddPiece(transform.parent.name, this);
-   }
 }

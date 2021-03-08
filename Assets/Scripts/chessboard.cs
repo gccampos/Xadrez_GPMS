@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading;
+using System.Threading.Tasks;
 
 public class Chessboard : MonoBehaviour{
 
@@ -8,10 +10,21 @@ public class Chessboard : MonoBehaviour{
    public Dictionary<Vector2Int, Tile> tiles = new Dictionary<Vector2Int, Tile>();
    public List<Piece> goldenPieces = new List<Piece>();
    public List<Piece> greenPieces = new List<Piece>();
+   public Transform goldHolder;
+   public Transform greenHolder;
 
    void Awake(){
        instance=this;
-       CreateBoard();
+   }
+
+   public async Task LoadAsync(){
+       GetTeams(); 
+       await Task.Run(() => CreateBoard());
+   }
+
+   void GetTeams(){
+       goldenPieces.AddRange(goldHolder.GetComponentsInChildren<Piece>());
+       greenPieces.AddRange(greenHolder.GetComponentsInChildren<Piece>());
    }
 
    public void AddPiece(string team, Piece piece){
@@ -19,15 +32,9 @@ public class Chessboard : MonoBehaviour{
        Vector2Int pos = new Vector2Int((int) v2Pos.x, (int) v2Pos.y);
        piece.tile = tiles[pos];
        piece.tile.content = piece;
-       
-       if(team == "GreenPieces"){
-           greenPieces.Add(piece);
-       } else { 
-           goldenPieces.Add(piece);
-       }
    }
 
-   void CreateBoard(){
+   public void CreateBoard(){
        for(int i=0;i<8;i++){
            for(int j=0;j<8;j++){
               CreateTile(i,j);
