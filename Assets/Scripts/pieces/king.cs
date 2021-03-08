@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class king : piece
+public class King : Piece
 {
     // Start is called before the first frame update
     

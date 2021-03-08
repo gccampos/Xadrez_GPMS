@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class tile 
+public class Tile 
 {
     public Vector2Int pos;
-    public piece content;
+    public Piece content;
 }

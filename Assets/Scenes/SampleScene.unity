@@ -131,7 +131,7 @@ GameObject:
   m_Component:
   - component: {fileID: 30661627}
   m_Layer: 0
-  m_Name: Golden_Pieces
+  m_Name: GoldenPieces
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -827,7 +827,7 @@ GameObject:
   m_Component:
   - component: {fileID: 725211534}
   m_Layer: 0
-  m_Name: Green_Pieces
+  m_Name: GreenPieces
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1113,6 +1113,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cef22e82589e18489d4a4a585d7fd87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  goldenPieces: []
+  greenPieces: []
 --- !u!1001 &859291157
 PrefabInstance:
   m_ObjectHideFlags: 0
