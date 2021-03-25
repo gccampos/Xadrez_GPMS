@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Queen : Piece
+public abstract class Movement
 {
- 
+    public abstract List<Tile> GetValidMoves();
 }

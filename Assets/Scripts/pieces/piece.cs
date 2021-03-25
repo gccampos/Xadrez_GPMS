@@ -5,7 +5,9 @@ using System.Threading.Tasks;
       
 public abstract class Piece : MonoBehaviour
 {
+      [HideInInspector]
   public Tile tile;
+  public Movement movement;
    void OnMouseDown(){
          Chessboard.instance.tileClicked(this, transform.parent.GetComponent<Player>());
    }
