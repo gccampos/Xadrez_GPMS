@@ -1,11 +1,10 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
-
 public class LoadState : State
 {
-    public override async void Enter()
+   public override async void Enter()
     {
         Debug.Log("entrou loadState");
         await Chessboard.instance.LoadAsync();

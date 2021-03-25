@@ -1,11 +1,10 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
-
 public class TurnEndState : State
 {
-    public override async void Enter()
+   public override async void Enter()
     {
         Debug.Log("TurnEndState");
         bool gameFinished = CheckTeams();

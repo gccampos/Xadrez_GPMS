@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
@@ -16,5 +16,4 @@ public class TurnBeginState : State
         await Task.Delay(100);
         machine.ChangeTo<TurnEndState>();
     }
-
 }

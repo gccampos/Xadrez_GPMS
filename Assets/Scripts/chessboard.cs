@@ -4,6 +4,8 @@ using UnityEngine;
 using System.Threading;
 using System.Threading.Tasks;
 
+public delegate void TileClickedEvent(object sender, object args);
+
 public class Chessboard : MonoBehaviour
 {
 
@@ -13,7 +15,8 @@ public class Chessboard : MonoBehaviour
     public List<Piece> greenPieces = new List<Piece>();
     public Transform goldHolder { get { return StateMachineController.instance.player1.transform; } }
     public Transform greenHolder { get { return StateMachineController.instance.player2.transform; } }
-
+    public TileClickedEvent tileClicked = delegate { };
+    public Piece selectedPiece;
 
     void Awake()
     {
@@ -21,7 +24,7 @@ public class Chessboard : MonoBehaviour
     }
 
     public async Task LoadAsync()
-    {
+    { 
         GetTeams();
         await Task.Run(() => CreateBoard());
     }

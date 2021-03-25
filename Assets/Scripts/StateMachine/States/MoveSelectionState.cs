@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameEndState : State
+public class MoveSelectionState : State
 {
     public override void Enter()
     {
-        Debug.Log("GameEndState");
+        Debug.Log("MoveSelectionState");
     }
-
 }

@@ -4,6 +4,6 @@ using UnityEngine;
 using System.Threading;
 using System.Threading.Tasks;
 
-public class Player : MonoBehaviour{
+public class Player : MonoBehaviour {
 
 }

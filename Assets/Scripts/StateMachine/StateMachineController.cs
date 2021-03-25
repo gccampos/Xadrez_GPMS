@@ -1,9 +1,10 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StateMachineController : MonoBehaviour{
-
+public class StateMachineController : MonoBehaviour
+{
+    // Start is called before the first frame update
     public static StateMachineController instance;
     State _current;
     bool busy;
