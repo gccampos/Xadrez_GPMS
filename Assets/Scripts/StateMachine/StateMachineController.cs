@@ -7,6 +7,9 @@ public class StateMachineController : MonoBehaviour{
     public static StateMachineController instance;
     State _current;
     bool busy;
+    public Player player1; //gold
+    public Player player2; //green
+    public Player currentlyPlaying;
 
 
     void Awake(){
