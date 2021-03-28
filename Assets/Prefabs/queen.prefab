@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0b2aa2669f459d40baf75f44c019716, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tile:
+    pos: {x: 0, y: 0}
+    content: {fileID: 0}
 --- !u!1001 &8072947659101470405
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19,6 +22,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6699553969766978560, guid: 9bc75349d085a7343ad91e38438741a5,
+        type: 3}
+      propertyPath: m_SpriteTilingProperty.pivot.x
+      value: 0.12
+      objectReference: {fileID: 0}
+    - target: {fileID: 6699553969766978560, guid: 9bc75349d085a7343ad91e38438741a5,
+        type: 3}
+      propertyPath: m_SpriteTilingProperty.pivot.y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6699553969766978560, guid: 9bc75349d085a7343ad91e38438741a5,
+        type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.x
+      value: 1.4545455
+      objectReference: {fileID: 0}
+    - target: {fileID: 6699553969766978560, guid: 9bc75349d085a7343ad91e38438741a5,
+        type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.y
+      value: 1.4545455
+      objectReference: {fileID: 0}
     - target: {fileID: 8336767123324754989, guid: 9bc75349d085a7343ad91e38438741a5,
         type: 3}
       propertyPath: m_RootOrder
@@ -27,12 +50,12 @@ PrefabInstance:
     - target: {fileID: 8336767123324754989, guid: 9bc75349d085a7343ad91e38438741a5,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.9396019
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8336767123324754989, guid: 9bc75349d085a7343ad91e38438741a5,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5.1238856
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8336767123324754989, guid: 9bc75349d085a7343ad91e38438741a5,
         type: 3}

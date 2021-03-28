@@ -17,13 +17,13 @@ public class TurnEndState : State
 
     bool CheckTeams()
     {
-        Piece goldPiece = Chessboard.instance.goldenPieces.Find((x) => x.gameObject.activeSelf == true);
+        Piece goldPiece = Chessboard.instance.GoldenPieces.Find((x) => x.gameObject.activeSelf == true);
         if (goldPiece == null)
         {
             Debug.Log("Lado verde ganhou");
             return true;
         }
-        Piece greenPiece = Chessboard.instance.greenPieces.Find((x) => x.gameObject.activeSelf == true);
+        Piece greenPiece = Chessboard.instance.GreenPieces.Find((x) => x.gameObject.activeSelf == true);
         if (greenPiece == null)
         {
             Debug.Log("Lado dourado ganhou");

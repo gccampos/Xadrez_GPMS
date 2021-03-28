@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b40b12190f0ce5744b0b352f4692cb6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tile:
+    pos: {x: 0, y: 0}
+    content: {fileID: 0}
 --- !u!1001 &1165274209561523260
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27,12 +30,12 @@ PrefabInstance:
     - target: {fileID: 8336767123324754989, guid: 9bc75349d085a7343ad91e38438741a5,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.97
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8336767123324754989, guid: 9bc75349d085a7343ad91e38438741a5,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5.12
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8336767123324754989, guid: 9bc75349d085a7343ad91e38438741a5,
         type: 3}

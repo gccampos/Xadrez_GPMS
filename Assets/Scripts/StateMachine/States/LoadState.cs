@@ -15,8 +15,9 @@ public class LoadState : State
 
     async Task LoadAllPiecesAsync()
     {
-        LoadTeamPieces(Chessboard.instance.greenPieces);
-        LoadTeamPieces(Chessboard.instance.goldenPieces);
+        LoadTeamPieces(Chessboard.instance.GoldenPieces);
+        LoadTeamPieces(Chessboard.instance.GreenPieces);
+       
         await Task.Delay(100);
     }
 
@@ -24,6 +25,7 @@ public class LoadState : State
     {
         foreach (Piece piece in pieces)
         {
+           
             Chessboard.instance.AddPiece(piece.transform.parent.name, piece);
         }
     }

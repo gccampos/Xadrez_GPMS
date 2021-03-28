@@ -11,8 +11,8 @@ public class Chessboard : MonoBehaviour
 
     public static Chessboard instance;
     public Dictionary<Vector2Int, Tile> tiles = new Dictionary<Vector2Int, Tile>();
-    public List<Piece> goldenPieces = new List<Piece>();
-    public List<Piece> greenPieces = new List<Piece>();
+    public List<Piece> GoldenPieces = new List<Piece>();
+    public List<Piece> GreenPieces = new List<Piece>();
     public Transform goldHolder { get { return StateMachineController.instance.player1.transform; } }
     public Transform greenHolder { get { return StateMachineController.instance.player2.transform; } }
     public TileClickedEvent tileClicked = delegate { };
@@ -31,14 +31,17 @@ public class Chessboard : MonoBehaviour
 
     void GetTeams()
     {
-        goldenPieces.AddRange(goldHolder.GetComponentsInChildren<Piece>());
-        greenPieces.AddRange(greenHolder.GetComponentsInChildren<Piece>());
+        GoldenPieces.AddRange(goldHolder.GetComponentsInChildren<Piece>());
+        GreenPieces.AddRange(greenHolder.GetComponentsInChildren<Piece>());
     }
 
     public void AddPiece(string team, Piece piece)
     {
         Vector2 v2Pos = piece.transform.position;
-        Vector2Int pos = new Vector2Int((int)v2Pos.x, (int)v2Pos.y);
+        if(v2Pos.x<0){
+            v2Pos.x=-1;
+        }
+        Vector2Int pos = new Vector2Int((int)v2Pos.x+1, (int)v2Pos.y-5);
         piece.tile = tiles[pos];
         piece.tile.content = piece;
     }
