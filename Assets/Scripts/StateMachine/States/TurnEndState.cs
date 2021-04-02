@@ -6,7 +6,7 @@ public class TurnEndState : State
 {
    public override async void Enter()
     {
-        Debug.Log("TurnEndState");
+        //Debug.Log("TurnEndState");
         bool gameFinished = CheckTeams();
         await Task.Delay(100);
         if (gameFinished)

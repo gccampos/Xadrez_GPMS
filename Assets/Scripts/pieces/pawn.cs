@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Pawn : Piece
 {
-    void awake(){
-        movement = new PawnMovement();
-    }
+    void Awake(){
+       movement = new PawnMovement();
+       }
 }

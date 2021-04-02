@@ -12,7 +12,4 @@ public abstract class Piece : MonoBehaviour
          Chessboard.instance.tileClicked(this, transform.parent.GetComponent<Player>());
    }
    
-   void OnMouseUp(){
-          Debug.Log("Deixou de clicar em "+transform);
-   } 
 }

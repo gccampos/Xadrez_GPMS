@@ -17,6 +17,7 @@ public class Chessboard : MonoBehaviour
     public Transform greenHolder { get { return StateMachineController.instance.player2.transform; } }
     public TileClickedEvent tileClicked = delegate { };
     public Piece selectedPiece;
+    public HighlightClick selectedHighlight;
 
     void Awake()
     {
@@ -37,11 +38,11 @@ public class Chessboard : MonoBehaviour
 
     public void AddPiece(string team, Piece piece)
     {
+        
         Vector2 v2Pos = piece.transform.position;
-        if(v2Pos.x<0){
-            v2Pos.x=-1;
-        }
-        Vector2Int pos = new Vector2Int((int)v2Pos.x+1, (int)v2Pos.y-5);
+       
+        Vector2Int pos = new Vector2Int((int)v2Pos.x+1, (int)v2Pos.y);
+
         piece.tile = tiles[pos];
         piece.tile.content = piece;
     }

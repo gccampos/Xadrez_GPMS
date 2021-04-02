@@ -8,8 +8,14 @@ public class PawnMovement : Movement
     {
         List<Vector2Int> temp = new List<Vector2Int>();
         Vector2Int direction = GetDirection();
+
         temp.Add(Chessboard.instance.selectedPiece.tile.pos + direction);
-        return ValidateExists(temp);
+        List<Tile> list =ValidateExists(temp);
+        if(list==null){
+            
+                 return new List<Tile>();
+        }
+        return list;
     }
 
     Vector2Int GetDirection()
