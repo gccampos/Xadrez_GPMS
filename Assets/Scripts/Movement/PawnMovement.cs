@@ -10,12 +10,10 @@ public class PawnMovement : Movement
         Vector2Int direction = GetDirection();
 
         temp.Add(Chessboard.instance.selectedPiece.tile.pos + direction);
-        List<Tile> list =ValidateExists(temp);
-        if(list==null){
-            
-                 return new List<Tile>();
-        }
-        return list;
+        List<Tile> exists =ValidateExists(temp);
+        List<Tile> moveable=UntilBlockedPath(exists);
+        moveable.AddRange(GetPawnAttack(direction));
+        return moveable;
     }
 
     Vector2Int GetDirection()
@@ -47,5 +45,30 @@ public class PawnMovement : Movement
             }
         }
         return valid;
+    }
+
+    bool isEnemy(Vector2Int pos,out Tile temp){
+      if (Chessboard.instance.tiles.TryGetValue(pos, out temp)){
+         if(temp!=null && temp.content!=null){
+             if(temp.content.transform.parent != Chessboard.instance.selectedPiece.transform.parent){
+                 return true;
+             }
+         }
+      }
+      return false;      
+    }
+    List<Tile> GetPawnAttack(Vector2Int direction){
+         List<Tile> pawnAttack=new  List<Tile>();
+         Tile temp;
+         Piece piece= Chessboard.instance.selectedPiece;
+         Vector2Int leftPos=new Vector2Int(piece.tile.pos.x-1,piece.tile.pos.y+ direction.y);
+         Vector2Int rightPos=new Vector2Int(piece.tile.pos.x+1,piece.tile.pos.y+ direction.y);
+         if(isEnemy(leftPos,out temp)){
+             pawnAttack.Add(temp);
+         }
+          if(isEnemy(rightPos,out temp)){
+             pawnAttack.Add(temp);
+         }
+         return pawnAttack;
     }
 }
