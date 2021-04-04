@@ -22,7 +22,7 @@ public abstract class Movement
     protected List<Tile> UntilBlockedPath(Vector2Int direction, bool includeBlocked, int limit){
         List<Tile> moves = new List<Tile>();
         Tile current = Chessboard.instance.selectedPiece.tile;
-        while(current != null && moves.Count<limit>){
+        while(current!=null && moves.Count<limit){
             if(Chessboard.instance.tiles.TryGetValue(current.pos+direction, out current)){
                 if(current.content == null){
                     moves.Add(current);
