@@ -7,8 +7,8 @@ public class PieceMovementState : State
 {
     public override async void Enter(){
             Piece piece= Chessboard.instance.selectedPiece;
-            //Vector2 pos=Chessboard.instance.selectedHighlight.transform.position;
-            //pos.y-=1;
+            Vector2 pos=Chessboard.instance.selectedHighlight.transform.position;
+            pos.y-=1;
             //piece.transform.position=pos;
             piece.tile.content=null;
             piece.tile=Chessboard.instance.selectedHighlight.tile;
@@ -21,8 +21,8 @@ public class PieceMovementState : State
             piece.wasMoved = true;
 
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-            float timing = Vector3.Distance(piece.transform.position, Chessboard.instance.selectedHighlight.transform.position)*0.5f;
-            LeanTween.move(piece.gameObject, Chessboard.instance.selectedHighlight.transform.position, 1.5f).
+            float timing = Vector3.Distance(piece.transform.position,pos)*0.5f;
+            LeanTween.move(piece.gameObject,pos, 1.5f).
                 setOnComplete(()=> {
                     tcs.SetResult(true);
                 });
