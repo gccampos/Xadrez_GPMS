@@ -18,6 +18,7 @@ public class PieceMovementState : State
                 deadPiece.gameObject.SetActive(false);
             }
             piece.tile.content=piece;
+            piece.wasMoved = true;
 
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
             float timing = Vector3.Distance(piece.transform.position, Chessboard.instance.selectedHighlight.transform.position)*0.5f;
