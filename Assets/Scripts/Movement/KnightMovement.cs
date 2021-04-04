@@ -29,10 +29,10 @@ public class KnightMovement : Movement
         List<Tile> tiles = new List<Tile>();
         Tile tile1 = GetTile(pos+direction);
         Tile tile2 = GetTile(pos-direction);
-        if(tile1 != null){
+        if(tile1 != null && (tile1.content == null || isEnemy(tile1))){
             tiles.Add(tile1);
         }
-        if(tile2 != null){
+        if(tile2 != null && (tile2.content == null || isEnemy(tile2))){
             tiles.Add(tile2);
         }     
         return tiles;
