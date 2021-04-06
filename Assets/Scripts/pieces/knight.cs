@@ -4,6 +4,5 @@ using UnityEngine;
 
 public class Knight : Piece
 {
-    // Start is called before the first frame update
-   
+
 }

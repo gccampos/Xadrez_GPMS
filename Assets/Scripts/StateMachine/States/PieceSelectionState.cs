@@ -1,0 +1,29 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using System.Threading.Tasks;
+
+public class PieceSelectionState : State
+{
+    public override void Enter()
+    {
+        Chessboard.instance.tileClicked += PieceClicked;
+    }
+
+    public override void Exit()
+    {
+        Chessboard.instance.tileClicked -= PieceClicked;
+    }
+
+    void PieceClicked(object sender, object args)
+    {
+        Piece piece = sender as Piece;
+        Player player = args as Player;
+        if (machine.currentlyPlaying == player)
+        {
+            Debug.Log(piece + " fora clicada");
+            Chessboard.instance.selectedPiece = piece;
+            machine.ChangeTo<MoveSelectionState>();
+        }
+    }
+}
