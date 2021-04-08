@@ -9,7 +9,7 @@ public class PieceMovementState : State
             Piece piece= Chessboard.instance.selectedPiece;
             Vector2 pos=Chessboard.instance.selectedHighlight.transform.position;
             pos.y-=1;
-            piece.transform.position=pos;
+            //piece.transform.position=pos;
             piece.tile.content=null;
             piece.tile=Chessboard.instance.selectedHighlight.tile;
             if(piece.tile.content!=null){
@@ -18,7 +18,15 @@ public class PieceMovementState : State
                 deadPiece.gameObject.SetActive(false);
             }
             piece.tile.content=piece;
-            await Task.Delay(100);
+            piece.wasMoved = true;
+
+            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+            float timing = Vector3.Distance(piece.transform.position,pos)*0.5f;
+            LeanTween.move(piece.gameObject,pos, 1.5f).
+                setOnComplete(()=> {
+                    tcs.SetResult(true);
+                });
+            await tcs.Task;
             machine.ChangeTo<TurnEndState>();
     }
 }
