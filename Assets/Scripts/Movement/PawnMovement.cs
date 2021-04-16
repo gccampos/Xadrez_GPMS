@@ -7,13 +7,13 @@ public class PawnMovement : Movement
     public override List<Tile> GetValidMoves()
     {
         Vector2Int direction = GetDirection();
-
         int limit = 1;
         if(!Chessboard.instance.selectedPiece.wasMoved){
             limit = 2;
         }
         List<Tile> moveable = UntilBlockedPath(direction, false, limit);
         moveable.AddRange(GetPawnAttack(direction));
+        SetNormalMove(moveable);
         return moveable;
     }
 

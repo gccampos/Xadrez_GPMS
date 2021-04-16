@@ -37,4 +37,11 @@ public abstract class Movement
         }
         return moves;
     }
+
+    protected void SetNormalMove(List<Tile> tiles){
+        foreach (Tile t in tiles)
+        {
+            t.moveType = MoveType.Normal;
+        }
+    }
 }
