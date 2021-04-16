@@ -4,7 +4,6 @@ using UnityEngine;
 using System.Threading;
 using System.Threading.Tasks;
 
-public delegate void TileClickedEvent(object sender, object args);
 
 public class Chessboard : MonoBehaviour
 {
@@ -15,7 +14,6 @@ public class Chessboard : MonoBehaviour
     public List<Piece> GreenPieces = new List<Piece>();
     public Transform goldHolder { get { return StateMachineController.instance.player1.transform; } }
     public Transform greenHolder { get { return StateMachineController.instance.player2.transform; } }
-    public TileClickedEvent tileClicked = delegate { };
     public Piece selectedPiece;
     public HighlightClick selectedHighlight;
 
@@ -28,6 +26,26 @@ public class Chessboard : MonoBehaviour
     { 
         GetTeams();
         await Task.Run(() => CreateBoard());
+    }
+    [ContextMenu("Reset Board")]
+    public void ResetBoard(){
+        foreach(Tile t in tiles.Values){
+            t.content = null;
+        }
+        foreach(Piece p in GoldenPieces){
+            ResetPiece(p);
+        }
+        foreach(Piece p in GreenPieces){
+            ResetPiece(p);
+        }
+    }
+
+    void ResetPiece(Piece piece){
+        if(piece.gameObject.activeSelf)
+            return;
+        Vector2Int pos= new Vector2Int((int) piece.transform.position.x, (int) piece.transform.position.y);
+        tiles.TryGetValue(pos, out piece.tile);
+        piece.tile.content = piece;
     }
 
     void GetTeams()
