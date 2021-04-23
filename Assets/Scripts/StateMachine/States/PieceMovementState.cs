@@ -61,11 +61,11 @@ public class PieceMovementState : State
         rook.tile.content = rook;
         king.wasMoved = true;
         rook.wasMoved = true;
-        LeanTween.move(king.gameObject, Chessboard.instance.selectedHighlight.transform.position, 1.5f).
+        LeanTween.move(king.gameObject,new Vector3(king.tile.pos.x,king.tile.pos.y,0), 1.5f).
             setOnComplete(()=> {
                 tcs.SetResult(true);
             }
         );
-        LeanTween.move(rook.gameObject, Chessboard.instance.selectedHighlight.transform.position, 1.5f);
+        LeanTween.move(rook.gameObject,new Vector3(rook.tile.pos.x,rook.tile.pos.y,0), 1.4f);
     }
 }

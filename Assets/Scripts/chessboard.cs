@@ -57,9 +57,12 @@ public class Chessboard : MonoBehaviour
     public void AddPiece(string team, Piece piece)
     {
         
-        Vector2 v2Pos = piece.transform.position;
-       
-        Vector2Int pos = new Vector2Int((int)v2Pos.x+1, (int)v2Pos.y);
+        Vector3 v3Pos = piece.transform.position;
+    
+        if(v3Pos.x<=0){
+          v3Pos.x=-1;
+        }
+        Vector2Int pos = new Vector2Int((int)v3Pos.x+1, (int)v3Pos.y);
 
         piece.tile = tiles[pos];
         piece.tile.content = piece;
