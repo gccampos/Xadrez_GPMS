@@ -28,7 +28,6 @@ public class MoveSelectionState : State
          Vector3 v3Pos=highlight.transform.position;
          Vector2Int pos= new Vector2Int((int)v3Pos.x,(int)v3Pos.y-1);
          Tile tileClicked=highlight.tile;
-         Debug.Log(tileClicked.pos);
          Chessboard.instance.selectedHighlight= highlight;
          machine.ChangeTo<PieceMovementState>();
          

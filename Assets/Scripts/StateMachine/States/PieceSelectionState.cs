@@ -19,12 +19,18 @@ public class PieceSelectionState : State
     public override void Enter()
     {
         InputController.instance.tileClicked += PieceClicked;
+        SetColliders(true);
     }
 
     public override void Exit()
     {
         InputController.instance.tileClicked -= PieceClicked;
+        SetColliders(false);
     }
-
+    void SetColliders(bool state){
+        foreach(BoxCollider2D b in machine.currentlyPlaying.GetComponentsInChildren<BoxCollider2D>()){
+            b.enabled=state;
+        }
+    }
    
 }

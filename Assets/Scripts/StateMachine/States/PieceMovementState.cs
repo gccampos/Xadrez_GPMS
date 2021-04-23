@@ -6,8 +6,11 @@ using UnityEngine;
 public class PieceMovementState : State
 {
     public override async void Enter(){
+
+        MoveType moveType=Chessboard.instance.selectedHighlight.tile.moveType;
+        ClearEnPassants();
         TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-        switch (Chessboard.instance.selectedHighlight.tile.moveType)
+        switch (moveType)
         {
             case MoveType.Normal:
                 NormalMove(tcs);
@@ -15,6 +18,12 @@ public class PieceMovementState : State
             case MoveType.Castling:
                 Castling(tcs);
                 break;
+            case MoveType.PawnDoubleMove:
+                PawnDoubleMove(tcs);
+                break;  
+            case MoveType.EnPassant:
+                EnPassant(tcs);
+                break;      
         }
         await tcs.Task;
         machine.ChangeTo<TurnEndState>();
@@ -67,5 +76,32 @@ public class PieceMovementState : State
             }
         );
         LeanTween.move(rook.gameObject,new Vector3(rook.tile.pos.x,rook.tile.pos.y,0), 1.4f);
+    }
+    void ClearEnPassants(){
+        ClearEnPassants(5);
+        ClearEnPassants(2);
+    }
+    void ClearEnPassants(int height){
+        Vector2Int positions=new Vector2Int(0,height);
+        for(int i=0;i<7;i++){
+            positions.x=positions.x+1;
+            Chessboard.instance.tiles[positions].moveType=MoveType.Normal;
+        }
+    }
+    void PawnDoubleMove(TaskCompletionSource<bool> tcs){
+        Piece pawn= Chessboard.instance.selectedPiece;
+        Vector2Int direction= pawn.tile.pos.y > Chessboard.instance.selectedHighlight.tile.pos.y? 
+        new Vector2Int(0,-1):new Vector2Int(0,1);
+        Chessboard.instance.tiles[pawn.tile.pos+direction].moveType=MoveType.EnPassant;
+        NormalMove(tcs);
+    }
+    void EnPassant(TaskCompletionSource<bool> tcs){
+        Piece pawn= Chessboard.instance.selectedPiece;
+        Vector2Int direction= pawn.tile.pos.y > Chessboard.instance.selectedHighlight.tile.pos.y? 
+        new Vector2Int(0,1):new Vector2Int(0,-1);
+        Tile enemy=Chessboard.instance.tiles[Chessboard.instance.selectedHighlight.tile.pos+direction];
+        enemy.content.gameObject.SetActive(false);
+        enemy.content=null;
+        NormalMove(tcs);
     }
 }

@@ -7,13 +7,20 @@ public class PawnMovement : Movement
     public override List<Tile> GetValidMoves()
     {
         Vector2Int direction = GetDirection();
-        int limit = 1;
+        List<Tile> moveable=GetPawnAttack(direction);
+        List<Tile>moves;
         if(!Chessboard.instance.selectedPiece.wasMoved){
-            limit = 2;
+            moves=UntilBlockedPath(direction,false,2);
+            SetNormalMove(moves);
+            if(moves.Count==2){
+                moves[1].moveType=MoveType.PawnDoubleMove;
+            }          
         }
-        List<Tile> moveable = UntilBlockedPath(direction, false, limit);
-        moveable.AddRange(GetPawnAttack(direction));
-        SetNormalMove(moveable);
+        else{
+            moves= moves=UntilBlockedPath(direction,false,1);
+            SetNormalMove(moves);
+        }
+        moveable.AddRange(moves);
         return moveable;
     }
 
@@ -30,14 +37,19 @@ public class PawnMovement : Movement
         Piece piece= Chessboard.instance.selectedPiece;
         Vector2Int leftPos=new Vector2Int(piece.tile.pos.x-1,piece.tile.pos.y+ direction.y);
         Vector2Int rightPos=new Vector2Int(piece.tile.pos.x+1,piece.tile.pos.y+ direction.y);
-        temp = GetTile(leftPos);
-        if(temp != null && isEnemy(temp)){
-            pawnAttack.Add(temp);
-        }
-        temp = GetTile(rightPos);
-        if(temp != null && isEnemy(temp)){
-            pawnAttack.Add(temp);
-        }
+        GetPawnAttack(GetTile(leftPos),pawnAttack);
+        GetPawnAttack(GetTile(rightPos),pawnAttack);
         return pawnAttack;
+    }
+    void GetPawnAttack(Tile tile,List<Tile> pawnAttack ){
+        if(tile==null){
+            return;
+        }
+        if(isEnemy(tile)){
+            tile.moveType=MoveType.Normal;
+            pawnAttack.Add(tile);
+        }else if(tile.moveType==MoveType.EnPassant){
+            pawnAttack.Add(tile);
+        }
     }
 }
