@@ -35,7 +35,6 @@ public class PawnMovement : Movement
 
     List<Tile> GetPawnAttack(Vector2Int direction){
         List<Tile> pawnAttack=new  List<Tile>();
-        Tile temp;
         Piece piece= Chessboard.instance.selectedPiece;
         Vector2Int leftPos=new Vector2Int(piece.tile.pos.x-1,piece.tile.pos.y+ direction.y);
         Vector2Int rightPos=new Vector2Int(piece.tile.pos.x+1,piece.tile.pos.y+ direction.y);

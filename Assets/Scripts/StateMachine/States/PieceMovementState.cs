@@ -119,12 +119,17 @@ public class PieceMovementState : State
        if(result=="Knight"){
            Chessboard.instance.selectedPiece.movement= new KnightMovement();
            if(Chessboard.instance.selectedPiece.transform.parent.name=="GreenPieces"){
-               //Chessboard.instance.selectedPiece.GetComponent<SpriteRenderer>().sprite=Resources.Load<Sprite>("Assets/Sprites/Chess_pieces_Green/Knight_1.png");
+               Chessboard.instance.selectedPiece.GetComponent<SpriteRenderer>().sprite= Chessboard.instance.knightGreen;
            }else{
-                //Chessboard.instance.selectedPiece.GetComponent<SpriteRenderer>().sprite=Resources.Load<Sprite>("Assets/Sprites/Chess_Pieces_golden/Knight_2.png");
+                Chessboard.instance.selectedPiece.GetComponent<SpriteRenderer>().sprite= Chessboard.instance.knightGolden;
            }
        }else{
             Chessboard.instance.selectedPiece.movement= new QueenMovement();
+             if(Chessboard.instance.selectedPiece.transform.parent.name=="GreenPieces"){
+               Chessboard.instance.selectedPiece.GetComponent<SpriteRenderer>().sprite= Chessboard.instance.queenGreen;
+           }else{
+                Chessboard.instance.selectedPiece.GetComponent<SpriteRenderer>().sprite= Chessboard.instance.queenGolden;
+           }
        }
        StateMachineController.instance.promotionPanel.SetActive(false);
        tcs.SetResult(true);
