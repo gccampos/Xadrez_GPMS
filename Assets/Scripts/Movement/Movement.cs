@@ -21,8 +21,8 @@ public abstract class Movement
 
     protected List<Tile> UntilBlockedPath(Vector2Int direction, bool includeBlocked, int limit){
         List<Tile> moves = new List<Tile>();
-        Tile current = Chessboard.instance.selectedPiece.tile;
-        while(current!=null && moves.Count<limit){
+        Tile current = Chessboard.instance.selectedPiece.tile;      
+        while(current!=null && moves.Count<limit){     
             if(Chessboard.instance.tiles.TryGetValue(current.pos+direction, out current)){
                 if(current.content == null){
                     moves.Add(current);
@@ -36,5 +36,12 @@ public abstract class Movement
             }
         }
         return moves;
+    }
+
+    protected void SetNormalMove(List<Tile> tiles){
+        foreach (Tile t in tiles)
+        {
+            t.moveType = MoveType.Normal;
+        }
     }
 }

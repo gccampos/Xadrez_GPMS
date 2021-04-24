@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
 
 public class StateMachineController : MonoBehaviour
 {
@@ -11,8 +12,9 @@ public class StateMachineController : MonoBehaviour
     public Player player1; //gold
     public Player player2; //green
     public Player currentlyPlaying;
-
-
+    public TaskCompletionSource<object> taskHold;
+    public GameObject promotionPanel;
+    
     void Awake(){
         instance = this;
     }

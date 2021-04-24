@@ -7,13 +7,22 @@ public class PawnMovement : Movement
     public override List<Tile> GetValidMoves()
     {
         Vector2Int direction = GetDirection();
-
-        int limit = 1;
+        List<Tile> moveable=GetPawnAttack(direction);
+        List<Tile>moves;
         if(!Chessboard.instance.selectedPiece.wasMoved){
-            limit = 2;
+            moves=UntilBlockedPath(direction,false,2);
+            SetNormalMove(moves);
+            if(moves.Count==2){
+                moves[1].moveType=MoveType.PawnDoubleMove;
+            }          
         }
-        List<Tile> moveable = UntilBlockedPath(direction, false, limit);
-        moveable.AddRange(GetPawnAttack(direction));
+        else{
+            moves= moves=UntilBlockedPath(direction,false,1);
+            SetNormalMove(moves);
+        }
+        moveable.AddRange(moves);
+        CheckPromotion(moves);
+
         return moveable;
     }
 
@@ -26,18 +35,29 @@ public class PawnMovement : Movement
 
     List<Tile> GetPawnAttack(Vector2Int direction){
         List<Tile> pawnAttack=new  List<Tile>();
-        Tile temp;
         Piece piece= Chessboard.instance.selectedPiece;
         Vector2Int leftPos=new Vector2Int(piece.tile.pos.x-1,piece.tile.pos.y+ direction.y);
         Vector2Int rightPos=new Vector2Int(piece.tile.pos.x+1,piece.tile.pos.y+ direction.y);
-        temp = GetTile(leftPos);
-        if(temp != null && isEnemy(temp)){
-            pawnAttack.Add(temp);
-        }
-        temp = GetTile(rightPos);
-        if(temp != null && isEnemy(temp)){
-            pawnAttack.Add(temp);
-        }
+        GetPawnAttack(GetTile(leftPos),pawnAttack);
+        GetPawnAttack(GetTile(rightPos),pawnAttack);
         return pawnAttack;
+    }
+    void GetPawnAttack(Tile tile,List<Tile> pawnAttack ){
+        if(tile==null){
+            return;
+        }
+        if(isEnemy(tile)){
+            tile.moveType=MoveType.Normal;
+            pawnAttack.Add(tile);
+        }else if(tile.moveType==MoveType.EnPassant){
+            pawnAttack.Add(tile);
+        }
+    }
+    void CheckPromotion(List<Tile> tiles){
+         foreach(Tile t in tiles){
+             if(t.pos.y==0 || t.pos.y==7){
+                 t.moveType=MoveType.Promotion;
+             }
+         }
     }
 }

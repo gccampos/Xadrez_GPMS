@@ -4,7 +4,6 @@ using UnityEngine;
 using System.Threading;
 using System.Threading.Tasks;
 
-public delegate void TileClickedEvent(object sender, object args);
 
 public class Chessboard : MonoBehaviour
 {
@@ -15,9 +14,12 @@ public class Chessboard : MonoBehaviour
     public List<Piece> GreenPieces = new List<Piece>();
     public Transform goldHolder { get { return StateMachineController.instance.player1.transform; } }
     public Transform greenHolder { get { return StateMachineController.instance.player2.transform; } }
-    public TileClickedEvent tileClicked = delegate { };
     public Piece selectedPiece;
     public HighlightClick selectedHighlight;
+    public Sprite knightGreen;
+    public Sprite knightGolden;
+    public Sprite queenGreen;
+    public Sprite queenGolden;
 
     void Awake()
     {
@@ -29,6 +31,26 @@ public class Chessboard : MonoBehaviour
         GetTeams();
         await Task.Run(() => CreateBoard());
     }
+    [ContextMenu("Reset Board")]
+    public void ResetBoard(){
+        foreach(Tile t in tiles.Values){
+            t.content = null;
+        }
+        foreach(Piece p in GoldenPieces){
+            ResetPiece(p);
+        }
+        foreach(Piece p in GreenPieces){
+            ResetPiece(p);
+        }
+    }
+
+    void ResetPiece(Piece piece){
+        if(piece.gameObject.activeSelf)
+            return;
+        Vector2Int pos= new Vector2Int((int) piece.transform.position.x, (int) piece.transform.position.y);
+        tiles.TryGetValue(pos, out piece.tile);
+        piece.tile.content = piece;
+    }
 
     void GetTeams()
     {
@@ -39,9 +61,12 @@ public class Chessboard : MonoBehaviour
     public void AddPiece(string team, Piece piece)
     {
         
-        Vector2 v2Pos = piece.transform.position;
-       
-        Vector2Int pos = new Vector2Int((int)v2Pos.x+1, (int)v2Pos.y);
+        Vector3 v3Pos = piece.transform.position;
+    
+        if(v3Pos.x<=0){
+          v3Pos.x=-1;
+        }
+        Vector2Int pos = new Vector2Int((int)v3Pos.x+1, (int)v3Pos.y);
 
         piece.tile = tiles[pos];
         piece.tile.content = piece;
