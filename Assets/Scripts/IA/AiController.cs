@@ -9,8 +9,17 @@ public class AiController : MonoBehaviour
   void Awake(){
       instance=this;
   }
-  [ContextMenu("Create Evaluations")]
-  public void CreateEvaluations(){
+  [ContextMenu("Calculate Plays")]
+  public async void CalculatePlays(){
+      currentState=CreateSnapShot();
+      currentState.name="start";
+      EvaluateBoard(currentState);
+      Ply currentPly=currentState;
+      currentPly.originPly=null;
+      currentPly.futurePlies=new List<Ply>();
+      Debug.Log("Começo");
+  }
+ Ply CreateSnapShot(){
       Ply ply= new Ply();
       ply.golds= new List<PieceEvaluation>();
       ply.greens= new List<PieceEvaluation>();
@@ -24,29 +33,41 @@ public class AiController : MonoBehaviour
             ply.greens.Add(CreateEvaluationPiece(p,ply));  
           }
       }
-       currentState=ply;
+       return ply;
   }
   PieceEvaluation CreateEvaluationPiece(Piece piece, Ply ply){
       PieceEvaluation eva= new PieceEvaluation();
       eva.piece=piece;
       return eva;
   } 
-  [ContextMenu("Evaluate")]
-  public void EvaluateBoard(){
-      Ply ply=currentState;
+  
+   void EvaluateBoard(Ply ply){
       foreach(PieceEvaluation piece in ply.golds ){
           EvaluatePiece(piece,ply,1);
       }
        foreach(PieceEvaluation piece in ply.greens ){
           EvaluatePiece(piece,ply,-1);
       }
-      Debug.Log(ply.score);
+      Debug.Log("Chessboard score: "+ply.score);
   }
   void EvaluatePiece(PieceEvaluation eva, Ply ply,int scoreDirection){
       Chessboard.instance.selectedPiece=eva.piece;
-      List<Tile> tiles=eva.piece.movement.GetValidMoves();
-      eva.availableMoves=tiles.Count;
+      eva.availableMoves=eva.piece.movement.GetValidMoves();
       eva.score=eva.piece.movement.value;
       ply.score+=eva.score*scoreDirection;
   }
+  void ResetBoard(Ply ply){
+     foreach(AffectedPiece p in ply.changes){
+         p.piece.tile.content=null;
+         p.piece.tile=p.from;
+         p.from.content=p.piece;
+         p.piece.transform.position= new Vector3(p.from.pos.x, p.from.pos.y,0);
+         p.piece.gameObject.SetActive(true);
+     }
+  }
+  [ContextMenu("Reset test")]
+   void ResetBoard(){
+      currentState.changes=PieceMovementState.changes;
+      ResetBoard(currentState);
+   }
 }
