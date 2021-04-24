@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class Movement
 {
     public abstract List<Tile> GetValidMoves();
+    public int value;
 
     protected bool isEnemy(Tile tile){
         if(tile.content != null && tile.content.transform.parent != Chessboard.instance.selectedPiece.transform.parent){
