@@ -23,7 +23,10 @@ public class PieceMovementState : State
                 break;  
             case MoveType.EnPassant:
                 EnPassant(tcs);
-                break;      
+                break;
+            case MoveType.Promotion:
+                Promotion(tcs);
+                break;          
         }
         await tcs.Task;
         machine.ChangeTo<TurnEndState>();
@@ -103,5 +106,27 @@ public class PieceMovementState : State
         enemy.content.gameObject.SetActive(false);
         enemy.content=null;
         NormalMove(tcs);
+    }
+    async void Promotion(TaskCompletionSource<bool> tcs){
+       TaskCompletionSource<bool> movementTCS= new TaskCompletionSource<bool>();
+       NormalMove(movementTCS);
+       await movementTCS.Task;
+       Debug.Log("promoveu");
+       StateMachineController.instance.taskHold= new TaskCompletionSource<object>();
+       StateMachineController.instance.promotionPanel.SetActive(true);
+       await StateMachineController.instance.taskHold.Task;
+       string result =StateMachineController.instance.taskHold.Task.Result as string;
+       if(result=="Knight"){
+           Chessboard.instance.selectedPiece.movement= new KnightMovement();
+           if(Chessboard.instance.selectedPiece.transform.parent.name=="GreenPieces"){
+               //Chessboard.instance.selectedPiece.GetComponent<SpriteRenderer>().sprite=Resources.Load<Sprite>("Assets/Sprites/Chess_pieces_Green/Knight_1.png");
+           }else{
+                //Chessboard.instance.selectedPiece.GetComponent<SpriteRenderer>().sprite=Resources.Load<Sprite>("Assets/Sprites/Chess_Pieces_golden/Knight_2.png");
+           }
+       }else{
+            Chessboard.instance.selectedPiece.movement= new QueenMovement();
+       }
+       StateMachineController.instance.promotionPanel.SetActive(false);
+       tcs.SetResult(true);
     }
 }
