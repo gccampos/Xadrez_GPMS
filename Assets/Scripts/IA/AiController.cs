@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ public class AiController : MonoBehaviour
 {
   public static AiController instance;
   public Ply currentState;
+  public HighlightClick AIhighlight;
   void Awake(){
       instance=this;
   }
@@ -18,6 +20,30 @@ public class AiController : MonoBehaviour
       currentPly.originPly=null;
       currentPly.futurePlies=new List<Ply>();
       Debug.Log("Começo");
+      foreach(PieceEvaluation eva in currentPly.golds){
+          Debug.Log("Analisando eva de: "+eva.piece);
+          foreach(Tile t in eva.availableMoves){
+               Debug.Log("avalindo t: "+t.pos);
+               Chessboard.instance.selectedPiece=eva.piece;
+               Chessboard.instance.selectedHighlight=AIhighlight;
+               AIhighlight.tile=t;
+               AIhighlight.transform.position= new Vector3(t.pos.x,t.pos.y,0);
+               TaskCompletionSource<bool> tcs =new TaskCompletionSource<bool>();
+               PieceMovementState.MovePiece(tcs,true);
+               await tcs.Task;
+               Ply newPly=CreateSnapShot();
+               newPly.name=string.Format("{0}, {1} to {2}", currentPly.name,eva.piece.name,t.pos);
+               newPly.changes=PieceMovementState.changes;
+               Debug.Log(newPly.name);
+               EvaluateBoard(newPly);
+               newPly.moveType=t.moveType;
+               currentPly.futurePlies.Add(newPly);
+               ResetBoard(newPly);
+          }
+      }
+      Debug.Log(currentPly.futurePlies.Count);
+      currentPly.futurePlies.Sort((x,y)=> x.score.CompareTo(y.score));
+      Debug.Log("Iria escolher: "+currentPly.futurePlies[currentPly.futurePlies.Count-1].name);
   }
  Ply CreateSnapShot(){
       Ply ply= new Ply();
@@ -65,9 +91,4 @@ public class AiController : MonoBehaviour
          p.piece.gameObject.SetActive(true);
      }
   }
-  [ContextMenu("Reset test")]
-   void ResetBoard(){
-      currentState.changes=PieceMovementState.changes;
-      ResetBoard(currentState);
-   }
 }

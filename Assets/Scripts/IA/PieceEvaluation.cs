@@ -8,5 +8,5 @@ public class PieceEvaluation
   public  List<Tile> availableMoves;
   public int defending;
   public int attacking;  
-  public int score;
+  public float score;
 }
