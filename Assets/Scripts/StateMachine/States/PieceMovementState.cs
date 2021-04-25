@@ -57,12 +57,12 @@ public class PieceMovementState : State
             Debug.LogFormat("Peça {0} foi morta",deadPiece.transform);
             deadPiece.gameObject.SetActive(false);
         }
-        piece.tile.content=piece;
-        piece.wasMoved = true;
+        piece.tile.content=piece;       
         if(skipMovements){
             piece.transform.position=pos;
             tcs.SetResult(true);
         }else{
+            piece.wasMoved = true;
             float timing = Vector3.Distance(piece.transform.position,pos)*0.5f;
             LeanTween.move(piece.gameObject,pos, 0.5f).
                 setOnComplete(()=> {

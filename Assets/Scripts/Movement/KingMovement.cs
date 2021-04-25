@@ -28,7 +28,7 @@ public class KingMovement : Movement
     }
 
     List<Tile> Castling(){ //ou rock
-        Debug.Log("entrou castling");
+       
         List<Tile> moves = new List<Tile>();
         if(Chessboard.instance.selectedPiece.wasMoved)
             return moves;
@@ -49,7 +49,6 @@ public class KingMovement : Movement
     Tile CheckRook(Vector2Int direction){
         Rook rook;
         Tile currentTile = GetTile(Chessboard.instance.selectedPiece.tile.pos + direction);
-        Debug.Log("Entrou check rook");
         while(currentTile!=null){
             if(currentTile.content!=null)
                 break;

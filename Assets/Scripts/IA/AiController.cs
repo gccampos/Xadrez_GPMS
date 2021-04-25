@@ -7,43 +7,82 @@ public class AiController : MonoBehaviour
 {
   public static AiController instance;
   public Ply currentState;
+  int calculationCount;
+  public int objectivePlyDepth=2;
   public HighlightClick AIhighlight;
   void Awake(){
       instance=this;
   }
+    async Task<Ply> CalculatePly(Ply parentPly,List<PieceEvaluation> team, int currentPlyDepth, int minMaxDirection){
+        parentPly.futurePlies= new List<Ply>();
+        currentPlyDepth++;
+        if(currentPlyDepth > objectivePlyDepth){
+            EvaluateBoard(parentPly);
+            return parentPly;
+        }
+        Ply plyceHolder= new Ply();
+        plyceHolder.score= -99999*minMaxDirection;
+        parentPly.bestFuture=plyceHolder;
+        foreach(PieceEvaluation eva in team){              
+                foreach(Tile t in eva.availableMoves){
+                    calculationCount++;
+                    Chessboard.instance.selectedPiece=eva.piece;
+                    Chessboard.instance.selectedHighlight=AIhighlight;
+                    AIhighlight.tile=t;
+                    AIhighlight.transform.position= new Vector3(t.pos.x,t.pos.y,0);
+                    TaskCompletionSource<bool> tcs =new TaskCompletionSource<bool>();
+                    PieceMovementState.MovePiece(tcs,true);
+                    await tcs.Task;
+                    Ply newPly=CreateSnapShot();
+                    newPly.name=string.Format("{0}, {1} to {2}", parentPly.name,eva.piece.transform.parent.name+eva.piece.name,t.pos);
+                    newPly.changes=PieceMovementState.changes;
+                    Task<Ply> calculation= CalculatePly(newPly,GetTeam(newPly,minMaxDirection*-1),currentPlyDepth,minMaxDirection*-1);
+                    await calculation;
+                    parentPly.bestFuture=IsBest(parentPly.bestFuture,minMaxDirection,calculation.Result);
+                    newPly.moveType=t.moveType;
+                    newPly.originPly=parentPly;
+                    parentPly.futurePlies.Add(newPly);
+                    ResetBoardBackwards(newPly);
+                }
+            }
+            return parentPly.bestFuture;
+    }
+   List<PieceEvaluation> GetTeam(Ply ply, int minMaxDirection){
+        if(minMaxDirection==1){
+             return ply.golds;
+        }else{
+            return ply.greens;
+        }
+    }
+    Ply IsBest(Ply ply,int minMaxDirection,Ply potentialBest){
+         if(minMaxDirection==1){
+             if(potentialBest.score>ply.score){
+                   return potentialBest;
+             }
+             return ply;
+         }else{
+             if(potentialBest.score<ply.score){
+                   return potentialBest;
+             }
+             return ply;
+         }
+    }      
   [ContextMenu("Calculate Plays")]
   public async void CalculatePlays(){
+      int minMaxDirection=1;
       currentState=CreateSnapShot();
       currentState.name="start";
-      EvaluateBoard(currentState);
+      calculationCount=0;
       Ply currentPly=currentState;
       currentPly.originPly=null;
-      currentPly.futurePlies=new List<Ply>();
+      int currentPlyDepth=0;
+      currentPly.changes= new List<AffectedPiece>();
       Debug.Log("Começo");
-      foreach(PieceEvaluation eva in currentPly.golds){
-          Debug.Log("Analisando eva de: "+eva.piece);
-          foreach(Tile t in eva.availableMoves){
-               Debug.Log("avalindo t: "+t.pos);
-               Chessboard.instance.selectedPiece=eva.piece;
-               Chessboard.instance.selectedHighlight=AIhighlight;
-               AIhighlight.tile=t;
-               AIhighlight.transform.position= new Vector3(t.pos.x,t.pos.y,0);
-               TaskCompletionSource<bool> tcs =new TaskCompletionSource<bool>();
-               PieceMovementState.MovePiece(tcs,true);
-               await tcs.Task;
-               Ply newPly=CreateSnapShot();
-               newPly.name=string.Format("{0}, {1} to {2}", currentPly.name,eva.piece.name,t.pos);
-               newPly.changes=PieceMovementState.changes;
-               Debug.Log(newPly.name);
-               EvaluateBoard(newPly);
-               newPly.moveType=t.moveType;
-               currentPly.futurePlies.Add(newPly);
-               ResetBoard(newPly);
-          }
-      }
-      Debug.Log(currentPly.futurePlies.Count);
-      currentPly.futurePlies.Sort((x,y)=> x.score.CompareTo(y.score));
-      Debug.Log("Iria escolher: "+currentPly.futurePlies[currentPly.futurePlies.Count-1].name);
+      Task<Ply> calculation= CalculatePly(currentPly,GetTeam(currentPly,minMaxDirection),currentPlyDepth,minMaxDirection);
+      await calculation;
+      currentPly.bestFuture=calculation.Result;
+      Debug.LogFormat("Melhor jogada para o dourado: {0}, com score: {1}", currentPly.bestFuture.name, currentPly.bestFuture.score);
+      Debug.Log("Calculation: "+calculationCount);
   }
  Ply CreateSnapShot(){
       Ply ply= new Ply();
@@ -64,6 +103,8 @@ public class AiController : MonoBehaviour
   PieceEvaluation CreateEvaluationPiece(Piece piece, Ply ply){
       PieceEvaluation eva= new PieceEvaluation();
       eva.piece=piece;
+      Chessboard.instance.selectedPiece=eva.piece;
+      eva.availableMoves=eva.piece.movement.GetValidMoves();
       return eva;
   } 
   
@@ -74,15 +115,12 @@ public class AiController : MonoBehaviour
        foreach(PieceEvaluation piece in ply.greens ){
           EvaluatePiece(piece,ply,-1);
       }
-      Debug.Log("Chessboard score: "+ply.score);
   }
-  void EvaluatePiece(PieceEvaluation eva, Ply ply,int scoreDirection){
-      Chessboard.instance.selectedPiece=eva.piece;
-      eva.availableMoves=eva.piece.movement.GetValidMoves();
+  void EvaluatePiece(PieceEvaluation eva, Ply ply,int scoreDirection){  
       eva.score=eva.piece.movement.value;
       ply.score+=eva.score*scoreDirection;
   }
-  void ResetBoard(Ply ply){
+  void ResetBoardBackwards(Ply ply){
      foreach(AffectedPiece p in ply.changes){
          p.piece.tile.content=null;
          p.piece.tile=p.from;
