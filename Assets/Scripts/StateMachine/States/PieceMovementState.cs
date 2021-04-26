@@ -43,6 +43,8 @@ public class PieceMovementState : State
         AffectedPiece pieceMoving= new AffectedPiece();
         pieceMoving.piece=piece;
         pieceMoving.from=piece.tile;
+        pieceMoving.to=Chessboard.instance.selectedHighlight.tile;
+        pieceMoving.wasMoved=piece.wasMoved;
         changes.Add(pieceMoving);
         Vector2 pos=Chessboard.instance.selectedHighlight.transform.position;
         pos.y-=1;
@@ -52,17 +54,18 @@ public class PieceMovementState : State
             Piece deadPiece= piece.tile.content;
             AffectedPiece pieceKilled= new AffectedPiece();
             pieceKilled.piece=deadPiece;
-            pieceKilled.from=piece.tile;
+            pieceKilled.from=pieceKilled.to=piece.tile;
             changes.Add(pieceKilled);
             Debug.LogFormat("Peça {0} foi morta",deadPiece.transform);
             deadPiece.gameObject.SetActive(false);
         }
-        piece.tile.content=piece;       
-        if(skipMovements){
-            piece.transform.position=pos;
+        piece.tile.content=piece;
+        piece.wasMoved=true;       
+        if(skipMovements){        
+            //piece.transform.position=pos;
             tcs.SetResult(true);
         }else{
-            piece.wasMoved = true;
+            piece.wasMoved = true;          
             float timing = Vector3.Distance(piece.transform.position,pos)*0.5f;
             LeanTween.move(piece.gameObject,pos, 0.5f).
                 setOnComplete(()=> {

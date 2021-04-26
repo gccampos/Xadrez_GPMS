@@ -10,6 +10,7 @@ public class AiController : MonoBehaviour
   int calculationCount;
   public int objectivePlyDepth=2;
   public HighlightClick AIhighlight;
+  float lastInterval;
   void Awake(){
       instance=this;
   }
@@ -18,10 +19,12 @@ public class AiController : MonoBehaviour
         currentPlyDepth++;
         if(currentPlyDepth > objectivePlyDepth){
             EvaluateBoard(parentPly);
+            //Task evaluationTask=Task.Run(()=>EvaluateBoard(parentPly));
+            //await evaluationTask;
             return parentPly;
         }
         Ply plyceHolder= new Ply();
-        plyceHolder.score= -99999*minMaxDirection;
+        plyceHolder.score= -9999999*minMaxDirection;
         parentPly.bestFuture=plyceHolder;
         foreach(PieceEvaluation eva in team){              
                 foreach(Tile t in eva.availableMoves){
@@ -33,8 +36,7 @@ public class AiController : MonoBehaviour
                     TaskCompletionSource<bool> tcs =new TaskCompletionSource<bool>();
                     PieceMovementState.MovePiece(tcs,true);
                     await tcs.Task;
-                    Ply newPly=CreateSnapShot();
-                    newPly.name=string.Format("{0}, {1} to {2}", parentPly.name,eva.piece.transform.parent.name+eva.piece.name,t.pos);
+                    Ply newPly=CreateSnapShot(parentPly);
                     newPly.changes=PieceMovementState.changes;
                     Task<Ply> calculation= CalculatePly(newPly,GetTeam(newPly,minMaxDirection*-1),currentPlyDepth,minMaxDirection*-1);
                     await calculation;
@@ -69,9 +71,9 @@ public class AiController : MonoBehaviour
     }      
   [ContextMenu("Calculate Plays")]
   public async void CalculatePlays(){
+      lastInterval=Time.realtimeSinceStartup;
       int minMaxDirection=1;
       currentState=CreateSnapShot();
-      currentState.name="start";
       calculationCount=0;
       Ply currentPly=currentState;
       currentPly.originPly=null;
@@ -81,8 +83,9 @@ public class AiController : MonoBehaviour
       Task<Ply> calculation= CalculatePly(currentPly,GetTeam(currentPly,minMaxDirection),currentPlyDepth,minMaxDirection);
       await calculation;
       currentPly.bestFuture=calculation.Result;
-      Debug.LogFormat("Melhor jogada para o dourado: {0}, com score: {1}", currentPly.bestFuture.name, currentPly.bestFuture.score);
       Debug.Log("Calculation: "+calculationCount);
+      Debug.Log("Time: "+(Time.realtimeSinceStartup-lastInterval));
+      PrintBestPly(currentPly.bestFuture);
   }
  Ply CreateSnapShot(){
       Ply ply= new Ply();
@@ -96,6 +99,22 @@ public class AiController : MonoBehaviour
       foreach(Piece p in Chessboard.instance.GreenPieces){
           if(p.gameObject.activeSelf){
             ply.greens.Add(CreateEvaluationPiece(p,ply));  
+          }
+      }
+       return ply;
+  }
+  Ply CreateSnapShot(Ply parentPly){
+      Ply ply= new Ply();
+      ply.golds= new List<PieceEvaluation>();
+      ply.greens= new List<PieceEvaluation>();
+      foreach(PieceEvaluation p in parentPly.golds){
+          if(p.piece.gameObject.activeSelf){
+            ply.golds.Add(CreateEvaluationPiece(p.piece,ply));  
+          }
+      }
+      foreach(PieceEvaluation p in parentPly.greens){
+          if(p.piece.gameObject.activeSelf){
+            ply.greens.Add(CreateEvaluationPiece(p.piece,ply));  
           }
       }
        return ply;
@@ -117,16 +136,25 @@ public class AiController : MonoBehaviour
       }
   }
   void EvaluatePiece(PieceEvaluation eva, Ply ply,int scoreDirection){  
-      eva.score=eva.piece.movement.value;
-      ply.score+=eva.score*scoreDirection;
+      ply.score+=eva.piece.movement.value*scoreDirection;
   }
   void ResetBoardBackwards(Ply ply){
      foreach(AffectedPiece p in ply.changes){
          p.piece.tile.content=null;
          p.piece.tile=p.from;
          p.from.content=p.piece;
-         p.piece.transform.position= new Vector3(p.from.pos.x, p.from.pos.y,0);
+        //p.piece.transform.position= new Vector3(p.from.pos.x, p.from.pos.y,0);
          p.piece.gameObject.SetActive(true);
      }
   }
+   void PrintBestPly(Ply finalPly){
+        Ply currentPly=finalPly;
+        Debug.Log("Melhor jogada:");
+        while (currentPly.originPly!=null){
+            Debug.LogFormat("{0}->{1}->{2}",
+            currentPly.changes[0].piece.transform.parent.name,
+            currentPly.changes[0].piece.name,
+            currentPly.changes[0].to.pos);
+        }
+    }
 }
