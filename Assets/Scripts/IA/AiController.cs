@@ -7,6 +7,7 @@ public class AiController : MonoBehaviour
 {
   public static AiController instance;
   public Ply currentState;
+  public AvailableMove enPassantFlagSaved;
   int calculationCount;
   public int objectivePlyDepth=2;
   public HighlightClick AIhighlight;
@@ -27,23 +28,22 @@ public class AiController : MonoBehaviour
         plyceHolder.score= -9999999*minMaxDirection;
         parentPly.bestFuture=plyceHolder;
         foreach(PieceEvaluation eva in team){              
-                foreach(Tile t in eva.availableMoves){
+                foreach(AvailableMove move in eva.availableMoves){
                     calculationCount++;
                     Chessboard.instance.selectedPiece=eva.piece;
-                    Chessboard.instance.selectedHighlight=AIhighlight;
-                    AIhighlight.tile=t;
-                    AIhighlight.transform.position= new Vector3(t.pos.x,t.pos.y,0);
+                    Chessboard.instance.selectedMove=move;
                     TaskCompletionSource<bool> tcs =new TaskCompletionSource<bool>();
-                    PieceMovementState.MovePiece(tcs,true);
+                    PieceMovementState.MovePiece(tcs,true,move.moveType);
                     await tcs.Task;
                     Ply newPly=CreateSnapShot(parentPly);
                     newPly.changes=PieceMovementState.changes;
+                    newPly.enPassantFlag=PieceMovementState.enPassantFlag;
                     Task<Ply> calculation= CalculatePly(newPly,GetTeam(newPly,minMaxDirection*-1),currentPlyDepth,minMaxDirection*-1);
                     await calculation;
                     parentPly.bestFuture=IsBest(parentPly.bestFuture,minMaxDirection,calculation.Result);
-                    newPly.moveType=t.moveType;
                     newPly.originPly=parentPly;
                     parentPly.futurePlies.Add(newPly);
+                    PieceMovementState.enPassantFlag=newPly.enPassantFlag;
                     ResetBoardBackwards(newPly);
                 }
             }
@@ -73,6 +73,7 @@ public class AiController : MonoBehaviour
   public async void CalculatePlays(){
       lastInterval=Time.realtimeSinceStartup;
       int minMaxDirection=1;
+      enPassantFlagSaved=PieceMovementState.enPassantFlag;
       currentState=CreateSnapShot();
       calculationCount=0;
       Ply currentPly=currentState;
@@ -86,6 +87,7 @@ public class AiController : MonoBehaviour
       Debug.Log("Calculation: "+calculationCount);
       Debug.Log("Time: "+(Time.realtimeSinceStartup-lastInterval));
       PrintBestPly(currentPly.bestFuture);
+      PieceMovementState.enPassantFlag=enPassantFlagSaved;
   }
  Ply CreateSnapShot(){
       Ply ply= new Ply();
@@ -143,6 +145,7 @@ public class AiController : MonoBehaviour
          p.piece.tile.content=null;
          p.piece.tile=p.from;
          p.from.content=p.piece;
+         p.piece.wasMoved=p.wasMoved;
         //p.piece.transform.position= new Vector3(p.from.pos.x, p.from.pos.y,0);
          p.piece.gameObject.SetActive(true);
      }
@@ -155,6 +158,7 @@ public class AiController : MonoBehaviour
             currentPly.changes[0].piece.transform.parent.name,
             currentPly.changes[0].piece.name,
             currentPly.changes[0].to.pos);
+            currentPly=currentPly.originPly;
         }
     }
 }

@@ -4,63 +4,67 @@ using UnityEngine;
 
 public class PawnMovement : Movement
 {
-    public PawnMovement(){
-        value=100;
+    Vector2Int direction;
+    public PawnMovement(Vector2Int rcvDirection){
+        direction=rcvDirection;
+        value = 100;
     }
-    public override List<Tile> GetValidMoves()
+    public override List<AvailableMove> GetValidMoves()
     {
-        Vector2Int direction = GetDirection();
-        List<Tile> moveable=GetPawnAttack(direction);
-        List<Tile>moves;
-        if(!Chessboard.instance.selectedPiece.wasMoved){
-            moves=UntilBlockedPath(direction,false,2);
-            SetNormalMove(moves);
-            if(moves.Count==2){
-                moves[1].moveType=MoveType.PawnDoubleMove;
-            }          
+        List<AvailableMove> moveable = GetPawnAttack(direction);
+        List<AvailableMove> moves;
+        if (!Chessboard.instance.selectedPiece.wasMoved)
+        {
+            moves = UntilBlockedPath(direction, false, 2);
+            if (moves.Count == 2)
+            {
+                moves[1] = new AvailableMove(moves[1].pos, MoveType.PawnDoubleMove);
+            }
         }
-        else{
-            moves= moves=UntilBlockedPath(direction,false,1);
-            SetNormalMove(moves);
+        else
+        {
+            moves = UntilBlockedPath(direction, false, 1);
+            if(moves.Count>0){
+                moves[0]=CheckPromotion(moves[0]);
+            }
         }
         moveable.AddRange(moves);
-        CheckPromotion(moves);
-
         return moveable;
     }
-
-    Vector2Int GetDirection()
+    List<AvailableMove> GetPawnAttack(Vector2Int direction)
     {
-        if (Chessboard.instance.selectedPiece.transform.parent.name == "GreenPieces")
-            return new Vector2Int(0, -1);
-        return new Vector2Int(0, 1);
-    }
-
-    List<Tile> GetPawnAttack(Vector2Int direction){
-        List<Tile> pawnAttack=new  List<Tile>();
-        Piece piece= Chessboard.instance.selectedPiece;
-        Vector2Int leftPos=new Vector2Int(piece.tile.pos.x-1,piece.tile.pos.y+ direction.y);
-        Vector2Int rightPos=new Vector2Int(piece.tile.pos.x+1,piece.tile.pos.y+ direction.y);
-        GetPawnAttack(GetTile(leftPos),pawnAttack);
-        GetPawnAttack(GetTile(rightPos),pawnAttack);
+        List<AvailableMove> pawnAttack = new List<AvailableMove>();
+        Piece piece = Chessboard.instance.selectedPiece;
+        Vector2Int leftPos = new Vector2Int(piece.tile.pos.x - 1, piece.tile.pos.y + direction.y);
+        Vector2Int rightPos = new Vector2Int(piece.tile.pos.x + 1, piece.tile.pos.y + direction.y);
+        GetPawnAttack(GetTile(leftPos), pawnAttack);
+        GetPawnAttack(GetTile(rightPos), pawnAttack);
         return pawnAttack;
     }
-    void GetPawnAttack(Tile tile,List<Tile> pawnAttack ){
-        if(tile==null){
+    void GetPawnAttack(Tile tile, List<AvailableMove> pawnAttack)
+    {
+        if (tile == null)
+        {
             return;
         }
-        if(isEnemy(tile)){
-            tile.moveType=MoveType.Normal;
-            pawnAttack.Add(tile);
-        }else if(tile.moveType==MoveType.EnPassant){
-            pawnAttack.Add(tile);
+        if (isEnemy(tile))
+        {
+            pawnAttack.Add(new AvailableMove(tile.pos, MoveType.Normal));
+        }
+        else if (PieceMovementState.enPassantFlag.moveType==MoveType.EnPassant && PieceMovementState.enPassantFlag.pos==tile.pos)
+        {
+            pawnAttack.Add(new AvailableMove(tile.pos, MoveType.EnPassant));
         }
     }
-    void CheckPromotion(List<Tile> tiles){
-         foreach(Tile t in tiles){
-             if(t.pos.y==0 || t.pos.y==7){
-                 t.moveType=MoveType.Promotion;
-             }
-         }
+    AvailableMove CheckPromotion(AvailableMove availableMove)
+    {
+      int promotionHeight=0;
+      if(Chessboard.instance.selectedPiece.maxTeam){
+          promotionHeight=7;
+      }
+      if(availableMove.pos.y != promotionHeight){
+          return availableMove;
+      }
+      return new AvailableMove(availableMove.pos, MoveType.Promotion);
     }
 }

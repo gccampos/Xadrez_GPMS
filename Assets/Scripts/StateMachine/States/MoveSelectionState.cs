@@ -7,9 +7,7 @@ public class MoveSelectionState : State
     public override void Enter()
     {
         Debug.Log("MoveSelectionState");
-        List<Tile> moves=new List<Tile>();
-        Debug.Log(Chessboard.instance.selectedPiece.movement);
-        moves = Chessboard.instance.selectedPiece.movement.GetValidMoves();
+        List<AvailableMove> moves=Chessboard.instance.selectedPiece.movement.GetValidMoves();  
         Highlights.instance.SelectTiles(moves);
         InputController.instance.tileClicked+= OnHighlightClicked;
         InputController.instance.returnClicked+= ReturnClicked;
@@ -25,10 +23,10 @@ public class MoveSelectionState : State
          if(highlight==null){
              return;
          }
-         Vector3 v3Pos=highlight.transform.position;
-         Vector2Int pos= new Vector2Int((int)v3Pos.x,(int)v3Pos.y-1);
-         Tile tileClicked=highlight.tile;
-         Chessboard.instance.selectedHighlight= highlight;
+         //Vector3 v3Pos=highlight.transform.position;
+         //Vector2Int pos= new Vector2Int((int)v3Pos.x,(int)v3Pos.y-1);
+         //Tile tileClicked=highlight.tile;
+         Chessboard.instance.selectedMove= highlight.move;
          machine.ChangeTo<PieceMovementState>();
          
     }

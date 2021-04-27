@@ -15,7 +15,7 @@ public class Chessboard : MonoBehaviour
     public Transform goldHolder { get { return StateMachineController.instance.player1.transform; } }
     public Transform greenHolder { get { return StateMachineController.instance.player2.transform; } }
     public Piece selectedPiece;
-    public HighlightClick selectedHighlight;
+    public AvailableMove selectedMove;
     public Sprite knightGreen;
     public Sprite knightGolden;
     public Sprite queenGreen;
