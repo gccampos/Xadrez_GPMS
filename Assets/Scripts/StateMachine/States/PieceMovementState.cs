@@ -17,7 +17,7 @@ public class PieceMovementState : State
     public static void MovePiece(TaskCompletionSource<bool> tcs, bool skipMovements, MoveType moveType)
     {
         changes = new List<AffectedPiece>();
-        enPassantFlag=new AvailableMove();
+        enPassantFlag = new AvailableMove();
         switch (moveType)
         {
             case MoveType.Normal:
@@ -41,12 +41,12 @@ public class PieceMovementState : State
     static void NormalMove(TaskCompletionSource<bool> tcs, bool skipMovements)
     {
         Piece piece = Chessboard.instance.selectedPiece;
-        AffectedPiece pieceMoving = new AffectedPiece();
+        AffectedPiece pieceMoving = piece.CreateAffected();
         pieceMoving.piece = piece;
         pieceMoving.from = piece.tile;
         pieceMoving.to = Chessboard.instance.tiles[Chessboard.instance.selectedMove.pos];
-        pieceMoving.wasMoved = piece.wasMoved;
-        changes.Insert(0,pieceMoving);
+
+        changes.Insert(0, pieceMoving);
         //Vector2 pos = Chessboard.instance.selectedHighlight.transform.position;
         //pos.y -= 1;
         piece.tile.content = null;
@@ -63,9 +63,9 @@ public class PieceMovementState : State
         }
         piece.wasMoved = true;
         piece.tile.content = piece;
-        Vector3 v3Pos= new Vector3(Chessboard.instance.selectedMove.pos.x,Chessboard.instance.selectedMove.pos.y,0);
+        Vector3 v3Pos = new Vector3(Chessboard.instance.selectedMove.pos.x, Chessboard.instance.selectedMove.pos.y, 0);
         if (skipMovements)
-        { 
+        {
             //piece.wasMoved = true;
             //piece.transform.position=pos;
             tcs.SetResult(true);
@@ -86,17 +86,15 @@ public class PieceMovementState : State
     static void Castling(TaskCompletionSource<bool> tcs, bool skipMovements)
     {
         Piece king = Chessboard.instance.selectedPiece;
-        AffectedPiece affectedKing = new AffectedPiece();
+        AffectedKingRook affectedKing = new AffectedKingRook();
         affectedKing.from = king.tile;
         king.tile.content = null;
-        affectedKing.wasMoved = king.wasMoved;
         affectedKing.piece = king;
 
         Piece rook = Chessboard.instance.tiles[Chessboard.instance.selectedMove.pos].content;
-        AffectedPiece affectedRook = new AffectedPiece();
+        AffectedKingRook affectedRook = new AffectedKingRook();
         affectedRook.from = rook.tile;
         rook.tile.content = null;
-        affectedRook.wasMoved = rook.wasMoved;
         affectedRook.piece = rook;
         Vector2Int direction = rook.tile.pos - king.tile.pos;
 
@@ -138,20 +136,19 @@ public class PieceMovementState : State
         Piece pawn = Chessboard.instance.selectedPiece;
         Vector2Int direction = pawn.maxTeam ?
         new Vector2Int(0, 1) : new Vector2Int(0, -1);
-        enPassantFlag= new AvailableMove(pawn.tile.pos+direction, MoveType.EnPassant);
+        enPassantFlag = new AvailableMove(pawn.tile.pos + direction, MoveType.EnPassant);
         NormalMove(tcs, skipMovements);
     }
     static void EnPassant(TaskCompletionSource<bool> tcs, bool skipMovements)
     {
         Piece pawn = Chessboard.instance.selectedPiece;
-        Vector2Int direction = pawn.maxTeam?
+        Vector2Int direction = pawn.maxTeam ?
         new Vector2Int(0, -1) : new Vector2Int(0, 1);
         Tile enemy = Chessboard.instance.tiles[Chessboard.instance.selectedMove.pos + direction];
-        AffectedPiece affectedEnemy =new AffectedPiece();
-        affectedEnemy.from=affectedEnemy.to=enemy;
-        affectedEnemy.piece=enemy.content;
-        affectedEnemy.wasMoved=enemy.content.wasMoved;
-        changes.Add(affectedEnemy);      
+        AffectedPiece affectedEnemy = new AffectedPiece();
+        affectedEnemy.from = affectedEnemy.to = enemy;
+        affectedEnemy.piece = enemy.content;
+        changes.Add(affectedEnemy);
         enemy.content.gameObject.SetActive(false);
         enemy.content = null;
         NormalMove(tcs, skipMovements);
@@ -161,36 +158,50 @@ public class PieceMovementState : State
         TaskCompletionSource<bool> movementTCS = new TaskCompletionSource<bool>();
         NormalMove(movementTCS, skipMovements);
         await movementTCS.Task;
-        Debug.Log("promoveu");
-        StateMachineController.instance.taskHold = new TaskCompletionSource<object>();
-        StateMachineController.instance.promotionPanel.SetActive(true);
-        await StateMachineController.instance.taskHold.Task;
-        string result = StateMachineController.instance.taskHold.Task.Result as string;
-        if (result == "Knight")
+        //Debug.Log("promoveu");
+        Pawn pawn= Chessboard.instance.selectedPiece as Pawn;
+        if (!skipMovements)
         {
-            Chessboard.instance.selectedPiece.movement = new KnightMovement();
-            if (Chessboard.instance.selectedPiece.transform.parent.name == "GreenPieces")
+            StateMachineController.instance.taskHold = new TaskCompletionSource<object>();
+            StateMachineController.instance.promotionPanel.SetActive(true);
+            await StateMachineController.instance.taskHold.Task;
+            string result = StateMachineController.instance.taskHold.Task.Result as string;
+            if (result == "Knight")
             {
-                Chessboard.instance.selectedPiece.GetComponent<SpriteRenderer>().sprite = Chessboard.instance.knightGreen;
+                Chessboard.instance.selectedPiece.movement = pawn.knightMovement;
+                if (Chessboard.instance.selectedPiece.transform.parent.name == "GreenPieces")
+                {
+                    Chessboard.instance.selectedPiece.GetComponent<SpriteRenderer>().sprite = Chessboard.instance.knightGreen;
+                }
+                else
+                {
+                    Chessboard.instance.selectedPiece.GetComponent<SpriteRenderer>().sprite = Chessboard.instance.knightGolden;
+                }
             }
             else
             {
-                Chessboard.instance.selectedPiece.GetComponent<SpriteRenderer>().sprite = Chessboard.instance.knightGolden;
+                Chessboard.instance.selectedPiece.movement = pawn.queenMovement;
+                if (Chessboard.instance.selectedPiece.transform.parent.name == "GreenPieces")
+                {
+                    Chessboard.instance.selectedPiece.GetComponent<SpriteRenderer>().sprite = Chessboard.instance.queenGreen;
+                }
+                else
+                {
+                    Chessboard.instance.selectedPiece.GetComponent<SpriteRenderer>().sprite = Chessboard.instance.queenGolden;
+                }
             }
+            StateMachineController.instance.promotionPanel.SetActive(false);
+        }else{
+            AffectedPawn affectedPawn= new AffectedPawn();
+            affectedPawn.wasMoved=true;
+            affectedPawn.resetMovement=true;
+            affectedPawn.from=changes[0].from;
+            affectedPawn.to=changes[0].to;
+            affectedPawn.piece=pawn;
+            changes[0]=affectedPawn;
+            pawn.movement=pawn.queenMovement;
         }
-        else
-        {
-            Chessboard.instance.selectedPiece.movement = new QueenMovement();
-            if (Chessboard.instance.selectedPiece.transform.parent.name == "GreenPieces")
-            {
-                Chessboard.instance.selectedPiece.GetComponent<SpriteRenderer>().sprite = Chessboard.instance.queenGreen;
-            }
-            else
-            {
-                Chessboard.instance.selectedPiece.GetComponent<SpriteRenderer>().sprite = Chessboard.instance.queenGolden;
-            }
-        }
-        StateMachineController.instance.promotionPanel.SetActive(false);
+       
         tcs.SetResult(true);
     }
 }

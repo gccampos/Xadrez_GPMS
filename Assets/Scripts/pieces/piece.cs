@@ -15,6 +15,9 @@ public abstract class Piece : MonoBehaviour
             maxTeam=true;
         }
     }
+    public virtual AffectedPiece CreateAffected(){
+        return new AffectedPiece();
+    }
     void OnMouseDown(){
         InputController.instance.tileClicked(this, transform.parent.GetComponent<Player>());
     }
