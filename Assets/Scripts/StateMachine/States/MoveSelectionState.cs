@@ -6,7 +6,6 @@ public class MoveSelectionState : State
 {
     public override void Enter()
     {
-        Debug.Log("MoveSelectionState");
         List<AvailableMove> moves=Chessboard.instance.selectedPiece.movement.GetValidMoves();  
         Highlights.instance.SelectTiles(moves);
         InputController.instance.tileClicked+= OnHighlightClicked;

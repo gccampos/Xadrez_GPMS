@@ -27,13 +27,15 @@ public class TurnEndState : State
         Piece goldPiece = Chessboard.instance.GoldenPieces.Find((x) => x.gameObject.activeSelf == true);
         if (goldPiece == null)
         {
-            Debug.Log("Lado verde ganhou");
+            StateMachineController.instance.endPanel.SetActive(true);
+            StateMachineController.instance.greenWin.enabled=true;
             return true;
         }
         Piece greenPiece = Chessboard.instance.GreenPieces.Find((x) => x.gameObject.activeSelf == true);
         if (greenPiece == null)
         {
-            Debug.Log("Lado dourado ganhou");
+           StateMachineController.instance.endPanel.SetActive(true);
+           StateMachineController.instance.goldenWin.enabled=true;
             return true;
         }
         return false;
@@ -42,12 +44,14 @@ public class TurnEndState : State
     bool CheckKing(){
         King king = Chessboard.instance.goldHolder.GetComponentInChildren<King>();
         if(king == null){
-            Debug.Log("Lado Verde Ganhou");
+           StateMachineController.instance.endPanel.SetActive(true);
+           StateMachineController.instance.greenWin.enabled=true;
             return true;
         }
         king = Chessboard.instance.greenHolder.GetComponentInChildren<King>();
         if(king == null){
-            Debug.Log("Lado Dourado Ganhou");
+            StateMachineController.instance.endPanel.SetActive(true);
+            StateMachineController.instance.goldenWin.enabled=true;
             return true;
         }
         return false;

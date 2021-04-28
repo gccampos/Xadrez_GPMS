@@ -10,7 +10,7 @@ public class AiController : MonoBehaviour
   Ply maxPly;
   Ply minPly;
   int calculationCount;
-  public int objectivePlyDepth=2;
+  public int objectivePlyDepth=3;
   public HighlightClick AIhighlight;
   float lastInterval;
   void Awake(){

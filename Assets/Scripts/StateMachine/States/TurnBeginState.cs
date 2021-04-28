@@ -7,7 +7,6 @@ public class TurnBeginState : State
 {
     public override async void Enter()
     {
-        Debug.Log("entrou turn begin");
         if (machine.currentlyPlaying == machine.player1)
             machine.currentlyPlaying = machine.player2;
         else
