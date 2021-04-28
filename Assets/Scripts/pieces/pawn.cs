@@ -10,17 +10,11 @@ public class Pawn : Piece
     protected override void Start()
     {
         base.Start();
-        movement=savedMovement= new PawnMovement(GetDirection());
+        movement=savedMovement= new PawnMovement(maxTeam);
     }
     public override AffectedPiece CreateAffected(){
        AffectedPawn aff= new AffectedPawn();
        aff.wasMoved=wasMoved;
        return aff;
-    }
-     Vector2Int GetDirection()
-    {
-        if (maxTeam)
-            return new Vector2Int(0, 1);
-        return new Vector2Int(0, -1);
     }
 }

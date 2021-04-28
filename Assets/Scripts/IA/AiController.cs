@@ -6,7 +6,6 @@ using UnityEngine;
 public class AiController : MonoBehaviour
 {
   public static AiController instance;
-  public Ply currentState;
   public AvailableMove enPassantFlagSaved;
   Ply maxPly;
   Ply minPly;
@@ -79,13 +78,17 @@ public class AiController : MonoBehaviour
          }
     }      
   [ContextMenu("Calculate Plays")]
-  public async void CalculatePlays(){
+  public async Task<Ply> CalculatePlays(){
       lastInterval=Time.realtimeSinceStartup;
-      int minMaxDirection=1;
+      int minMaxDirection;
+      if(StateMachineController.instance.currentlyPlaying==StateMachineController.instance.player1){
+          minMaxDirection= 1;
+      }else{
+          minMaxDirection= -1;
+      }
       enPassantFlagSaved=PieceMovementState.enPassantFlag;
-      currentState=CreateSnapShot();
+      Ply currentPly=CreateSnapShot();
       calculationCount=0;
-      Ply currentPly=currentState;
       currentPly.originPly=null;
       int currentPlyDepth=0;
       currentPly.changes= new List<AffectedPiece>();
@@ -97,6 +100,7 @@ public class AiController : MonoBehaviour
       Debug.Log("Time: "+(Time.realtimeSinceStartup-lastInterval));
       PrintBestPly(currentPly.bestFuture);
       PieceMovementState.enPassantFlag=enPassantFlagSaved;
+      return currentPly.bestFuture;
   }
  Ply CreateSnapShot(){
       Ply ply= new Ply();
