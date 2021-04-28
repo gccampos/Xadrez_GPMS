@@ -98,7 +98,7 @@ public class AiController : MonoBehaviour
       currentPly.bestFuture=calculation.Result;
       Debug.Log("Calculation: "+calculationCount);
       Debug.Log("Time: "+(Time.realtimeSinceStartup-lastInterval));
-      PrintBestPly(currentPly.bestFuture);
+      //PrintBestPly(currentPly.bestFuture);
       PieceMovementState.enPassantFlag=enPassantFlagSaved;
       return currentPly.bestFuture;
   }

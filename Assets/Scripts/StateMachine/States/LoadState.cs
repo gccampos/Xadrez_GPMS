@@ -6,7 +6,6 @@ public class LoadState : State
 {
    public override async void Enter()
     {
-        Debug.Log("entrou loadState");
         await Chessboard.instance.LoadAsync();
         await LoadAllPiecesAsync();
         machine.currentlyPlaying = machine.player2;
