@@ -5,21 +5,21 @@ using UnityEngine;
 public class KnightMovement : Movement
 {
     public KnightMovement(){
-        value=3;
+        value=300;
     }
-    public override List<Tile> GetValidMoves(){
-        List<Tile> moves = new List<Tile>();
+    public override List<AvailableMove> GetValidMoves(){
+        List<AvailableMove> moves = new List<AvailableMove>();
 
         moves.AddRange(GetMovement(new Vector2Int(0, 1)));
         moves.AddRange(GetMovement(new Vector2Int(0, -1)));
         moves.AddRange(GetMovement(new Vector2Int(1, 0)));
         moves.AddRange(GetMovement(new Vector2Int(-1, 0)));
-        SetNormalMove(moves);
+        
         return moves;
     }
 
-    List<Tile> GetMovement(Vector2Int direction){
-        List<Tile> moves = new List<Tile>();
+    List<AvailableMove> GetMovement(Vector2Int direction){
+        List<AvailableMove> moves = new List<AvailableMove>();
         Tile current = Chessboard.instance.selectedPiece.tile;
         Tile temp = GetTile(current.pos+direction*2);
         if(temp!=null){
@@ -28,17 +28,17 @@ public class KnightMovement : Movement
         return moves;
     }
 
-    List<Tile> GetCurvedPart(Vector2Int pos, Vector2Int direction){
-        List<Tile> tiles = new List<Tile>();
+    List<AvailableMove> GetCurvedPart(Vector2Int pos, Vector2Int direction){
+        List<AvailableMove> availableMoves = new List<AvailableMove>();
         Tile tile1 = GetTile(pos+direction);
         Tile tile2 = GetTile(pos-direction);
         if(tile1 != null && (tile1.content == null || isEnemy(tile1))){
-            tiles.Add(tile1);
+            availableMoves.Add(new AvailableMove(tile1.pos));
         }
         if(tile2 != null && (tile2.content == null || isEnemy(tile2))){
-            tiles.Add(tile2);
+            availableMoves.Add(new AvailableMove(tile2.pos));
         }     
-        return tiles;
+        return availableMoves;
     }
 
 }

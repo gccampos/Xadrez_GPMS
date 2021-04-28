@@ -7,4 +7,5 @@ using System.Threading.Tasks;
 public class Player : MonoBehaviour {
 
     public Color color;
+    public bool AiControlled;
 }

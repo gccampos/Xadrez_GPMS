@@ -11,7 +11,6 @@ public class PieceSelectionState : State
         Player player = args as Player;
         if (machine.currentlyPlaying == player)
         {
-            Debug.Log(piece + " fora clicada");
             Chessboard.instance.selectedPiece = piece;
             machine.ChangeTo<MoveSelectionState>();
         }
